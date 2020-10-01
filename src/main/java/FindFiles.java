@@ -1,57 +1,113 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class FindFiles {
     public static File[] files;
+    public static boolean matched = false;
 
     public static void getTargetFiles(File directory, String targets, boolean isRegex, boolean isExt, String[] extensions){
-        if(directory == null || directory.isDirectory() == false){
-            System.out.println("Error: the directory is null/does not exit");
+        if(directory == null || !directory.isDirectory()){
+            System.out.println("Error: the directory is null or it does not exit");
             System.exit(1);
         }
 
-
-        files = directory.listFiles(new FilenameFilter(){
+        files = directory.listFiles(new FileFilter(){
             @Override
-            public boolean accept(File dir, String name) {
+            public boolean accept(File pathname) {
                 // TODO Auto-generated method stub
 
                 // -reg
                 if(isRegex) {
                     if(isExt) {
                         for(String ext : extensions) {
-                            if(name.matches(targets) && name.endsWith("."+ext)) {
+                            if(!pathname.isDirectory() && pathname.getName().matches(targets) && pathname.getName().endsWith("."+ext)) {
                                 return true;
                             }
                         }
                         return false;
                     } else {
-                        return name.matches(targets);
+                        return !pathname.isDirectory() && pathname.getName().matches(targets);
                     }
 
                 } else {
                     if(isExt) {
                         for(String ext : extensions) {
-                            if(name.equals(targets+"."+ext)) return true;
+                            if(!pathname.isDirectory() && pathname.getName().equals(targets+"."+ext)) return true;
                         }
                         return false;
                     } else {
-                        return name.equals(targets);
+                        return !pathname.isDirectory() && pathname.getName().equals(targets);
                     }
 
                 }
             }
 
         });
+
+        /*if(targetFiles != null && targetFiles.length != 0) {
+            //files.addAll(Arrays.asList(targetFiles));
+            for(File file : targetFiles) {
+                files.add(file);
+            }
+        }*/
+
+
+        /*for(File pathname: directory.listFiles()){
+            System.out.println(pathname.getName());
+            // -reg
+            if(isRegex) {
+                if(isExt) {
+                    for(String ext : extensions) {
+                        if(!pathname.isDirectory() && pathname.getName().matches(targets) && pathname.getName().endsWith("."+ext)) {
+                            files.add(pathname);
+                        }
+                    }
+                } else {
+                    if(!pathname.isDirectory() && pathname.getName().matches(targets)) {
+                        files.add(pathname);
+                    }
+                }
+
+            } else {
+                if(isExt) {
+                    for(String ext : extensions) {
+                        if(!pathname.isDirectory() && pathname.getName().equals(targets+"."+ext)) files.add(pathname);
+                    }
+                } else {
+                    if(!pathname.isDirectory() && pathname.getName().equals(targets)) {
+                        files.add(pathname);
+                    }
+                }
+
+            }
+        }
+        System.out.println("out");*/
     }
 
     // only pass directory as parameter
-    public static void recursive(File path, String targets, boolean isRegex, boolean isExt, String[] extensions) {
-        if(path == null || path.isDirectory() == false){
-            System.out.println("Error: the directory is null/does not exit");
+    public static void recursive(File path, String targets, boolean isRegex, boolean isExt, String[] extensions) throws IOException {
+        if(path == null || !path.isDirectory()){
+            System.out.println("Error: the directory is null or it does not exit");
             System.exit(1);
         }
 
+        if(path.listFiles() == null) {
+            System.out.println("Error: the directory is empty");
+            System.exit(1);
+        }
+
+        /*try {
+            System.out.println(path.getCanonicalPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
         getTargetFiles(path,targets,isRegex,isExt,extensions);
+        if(files.length != 0) {
+            printFiles(files);
+        }
         for(File file: path.listFiles()){
             if(file.isDirectory()){
                 recursive(file,targets,isRegex,isExt,extensions);
@@ -61,7 +117,10 @@ public class FindFiles {
     }
 
     public static void printFiles(File[] files) throws IOException {
-        System.out.println("Found matching file(s) at:");
+        if(!matched) {
+            System.out.println("Found matching file(s) at:");
+            matched = true;
+        }
         for(File file : files) {
             System.out.println(file.getCanonicalPath());
         }
@@ -199,28 +258,19 @@ public class FindFiles {
             if (recurse) {
                 System.out.println(" in '" + tarDir.getName() + "' and its subdirectories recursively");
                 recursive(tarDir, fileName, regex, extension, extTypes);
+                if(!matched) {
+                    System.out.println("No matching file found!");
+                }
             } else {
                 System.out.println(" in '" + tarDir.getName() + "'");
                 getTargetFiles(tarDir, fileName, regex, extension, extTypes);
-            }
-
-            /*if(regex && extension) {
-                for(File file : files) {
-                    boolean correctExt = false;
-                    for(String ext : extTypes) {
-                        if(file.getName().endsWith(ext)) {
-                            correctExt = true;
-                        }
-                    }
-                    if(correctExt == false) files;
+                if(files.length == 0) {
+                    System.out.println("No matching file found!");
+                } else {
+                    printFiles(files);
                 }
-            }*/
-
-            if(files.length == 0) {
-                System.out.println("No matching file found!");
-            } else {
-                printFiles(files);
             }
+
 
         } catch (Exception e) {
             System.out.println(e.toString());
