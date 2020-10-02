@@ -1,10 +1,6 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class FindFiles {
-    // could have return it
     public static File[] files;
     public static boolean matched = false;
 
@@ -47,47 +43,9 @@ public class FindFiles {
 
         });
 
-        /*if(targetFiles != null && targetFiles.length != 0) {
-            //files.addAll(Arrays.asList(targetFiles));
-            for(File file : targetFiles) {
-                files.add(file);
-            }
-        }*/
-
-
-        /*for(File pathname: directory.listFiles()){
-            System.out.println(pathname.getName());
-            // -reg
-            if(isRegex) {
-                if(isExt) {
-                    for(String ext : extensions) {
-                        if(!pathname.isDirectory() && pathname.getName().matches(targets) && pathname.getName().endsWith("."+ext)) {
-                            files.add(pathname);
-                        }
-                    }
-                } else {
-                    if(!pathname.isDirectory() && pathname.getName().matches(targets)) {
-                        files.add(pathname);
-                    }
-                }
-
-            } else {
-                if(isExt) {
-                    for(String ext : extensions) {
-                        if(!pathname.isDirectory() && pathname.getName().equals(targets+"."+ext)) files.add(pathname);
-                    }
-                } else {
-                    if(!pathname.isDirectory() && pathname.getName().equals(targets)) {
-                        files.add(pathname);
-                    }
-                }
-
-            }
-        }
-        System.out.println("out");*/
     }
 
-    // only pass directory as parameter
+
     public static void recursive(File path, String targets, boolean isRegex, boolean isExt, String[] extensions) throws IOException {
         if(path == null || !path.isDirectory()){
             System.out.println("Error: the directory is null or it does not exit");
@@ -98,12 +56,6 @@ public class FindFiles {
             System.out.println("Error: the directory is empty");
             System.exit(1);
         }
-
-        /*try {
-            System.out.println(path.getCanonicalPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
 
         getTargetFiles(path,targets,isRegex,isExt,extensions);
         if(files.length != 0) {
@@ -234,19 +186,6 @@ public class FindFiles {
                 System.exit(1);
             }
 
-            //ArrayList<String> filesToFind = new ArrayList<>();
-
-            // -ext
-            /*if (extension) {
-                for (String ext : extTypes) {
-                    if(regex == false) {
-                        filesToFind.add(fileName.concat("."+ext));
-                    }
-                }
-            } else {
-                filesToFind.add(fileName);
-            }*/
-
             System.out.print("Looking for file '" + fileName + "'");
             if(regex) {
                 System.out.print(" as Regular expression");
@@ -277,6 +216,4 @@ public class FindFiles {
             System.out.println(e.toString());
         }
     }
-
-
 }
