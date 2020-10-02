@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class FindFiles {
+    // could have return it
     public static File[] files;
     public static boolean matched = false;
 
