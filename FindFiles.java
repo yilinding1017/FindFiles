@@ -4,17 +4,18 @@ public class FindFiles {
     public static File[] files;
     public static boolean matched = false;
 
+    // getTargetFiles filters the files by the directory name (dir) and options (regex, ext) and store the files in the global/static variable files
     public static void getTargetFiles(File directory, String targets, boolean isRegex, boolean isExt, String[] extensions){
+        // if the given directory is invalid, print out the error message
         if(directory == null || !directory.isDirectory()){
             System.out.println("Error: the directory is null or it does not exit");
             System.exit(1);
         }
 
+
         files = directory.listFiles(new FileFilter(){
             @Override
             public boolean accept(File pathname) {
-                // TODO Auto-generated method stub
-
                 // -reg
                 if(isRegex) {
                     if(isExt) {
@@ -45,7 +46,7 @@ public class FindFiles {
 
     }
 
-
+    // recursive searches files in its current directory and the subdirectories recursively
     public static void recursive(File path, String targets, boolean isRegex, boolean isExt, String[] extensions) throws IOException {
         if(path == null || !path.isDirectory()){
             System.out.println("Error: the directory is null or it does not exit");
@@ -69,7 +70,7 @@ public class FindFiles {
 
     }
 
-    //
+    // printFiles prints the absolute paths of the given files
     public static void printFiles(File[] files) throws IOException {
         if(!matched) {
             System.out.println("Found matching file(s) at:");
@@ -113,7 +114,7 @@ public class FindFiles {
                 }
             }
 
-            // check argument validity and count error numebrs
+            // parse and identify arguments to check validity and count error numebrs
             int j = 0;
             while (j < args.length) {
                 if (args[j].equals("-r")) {
@@ -135,11 +136,11 @@ public class FindFiles {
                         }
                         ++errorNum;
                     } else {
-                        //dir = true;
                         tarDir = new File(args[j + 1]).getAbsoluteFile();
                         ++j;
                     }
                 } else if (args[j].equals("-ext")) {
+                    // if it is -ext, need to check if it is followed by its augument
                     if ((j+1) >= args.length) {
                         if (errorNum == 0) {
                             errorMessage = "Error: no extension argument provided for option -ext";
